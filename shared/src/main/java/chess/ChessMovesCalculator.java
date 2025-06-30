@@ -10,10 +10,9 @@ public class ChessMovesCalculator {
             case BISHOP -> bishopMoves(board, myPosition);
             case KING -> kingMoves(board, myPosition);
             case KNIGHT -> knightMoves(board, myPosition);
-//            case PAWN -> pawnMoves(board, myPosition);
+            case PAWN -> pawnMoves(board, myPosition);
             case QUEEN -> queenMoves(board, myPosition);
             case ROOK -> rookMoves(board, myPosition);
-            default -> null;
         };
     }
 
@@ -77,10 +76,29 @@ public class ChessMovesCalculator {
         return move;
     }
     //will combine knightMoves and kingMoves later into one helper function
-//
-//    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
-//        Collection<ChessMove> move = new ArrayList<>();
-//    }
+
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> move = new ArrayList<>();
+        ChessPiece piece = board.getPiece(myPosition);
+        int directionCoord;
+        if (piece.getPieceColor() == ChessGame.TeamColor.WHITE){
+            directionCoord = 1;
+        } else {
+            directionCoord = -1;
+        }
+        int[][] PawnDirections = {{directionCoord, 0}};
+        for (int[] direction : PawnDirections) {
+            int y = direction[0];
+            int x = direction[1];
+            ChessPosition place = new ChessPosition(myPosition.getRow() + y, myPosition.getColumn() + x);
+            if (outsideBounds(place)) continue;
+            if (board.getPiece(place) == null){
+                move.add(new ChessMove(myPosition, place, null));
+            }
+        }
+
+        return move;
+    }
 
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> move = new ArrayList<>();
