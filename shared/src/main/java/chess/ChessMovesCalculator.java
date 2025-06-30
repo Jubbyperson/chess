@@ -61,9 +61,16 @@ public class ChessMovesCalculator {
         return move;
     }
 
-//    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
-//        Collection<ChessMove> move = new ArrayList<>();
-//    }
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> move = new ArrayList<>();
+        int[][] KnightDirections = {{1,2},{1,-2},{-1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1}};
+        for (int[] direction : KnightDirections) {
+            int y = direction[0];
+            int x = direction[1];
+        }
+
+        return move;
+    }
 //
 //    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
 //        Collection<ChessMove> move = new ArrayList<>();
