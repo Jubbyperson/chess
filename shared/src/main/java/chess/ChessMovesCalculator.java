@@ -16,11 +16,34 @@ public class ChessMovesCalculator {
         };
     }
 
+    private boolean outsideBounds(ChessPosition position) {
+        return (position.getRow() > 8 || position.getRow() < 1 || position.getColumn() > 8 || position.getColumn() < 1);
+    }
+
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> move = new ArrayList<>();
+        int[][] BishopDirections = {{1,1},{1,-1},{-1,1},{-1,-1}};
+        for (int[] direction : BishopDirections) {
+            int y = direction[0];
+            int x = direction[1];
+            for (int range = 1; ; range++) {
+                ChessPosition place = new ChessPosition(myPosition.getRow() + y * range, myPosition.getColumn() + x + range);
+                if (outsideBounds(place)) break;
+                ChessPiece spot =  board.getPiece(place);
+                if (spot == null){
+                    move.add(new ChessMove(myPosition, place, null));
+                    continue;
+                }
+
+                if (spot.pieceColor())
+            }
+
+        }
+        return move;
     }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
+        int[][] KingDirections = {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1}};
         Collection<ChessMove> move = new ArrayList<>();
     }
 
