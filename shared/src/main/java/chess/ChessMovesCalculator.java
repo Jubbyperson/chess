@@ -120,8 +120,23 @@ public class ChessMovesCalculator {
             move.add(new ChessMove(myPosition, twoSpaceAhead, null));
         }
 
-
         //capture logic
+        int captureColumn;
+        for (captureColumn = -1;  captureColumn <= 1; captureColumn += 2) {
+            ChessPosition target = new ChessPosition(myPosition.getRow() + directionCoord, myPosition.getColumn() + captureColumn);
+            if (outsideBounds(target)) continue;
+            ChessPiece place = board.getPiece(target);
+            if (place != null && place.getPieceColor() != piece.getPieceColor()){
+                if (target.getRow() == promotionRow){
+                    move.add(new ChessMove(myPosition, target, ChessPiece.PieceType.QUEEN));
+                    move.add(new ChessMove(myPosition, target, ChessPiece.PieceType.ROOK));
+                    move.add(new ChessMove(myPosition, target, ChessPiece.PieceType.BISHOP));
+                    move.add(new ChessMove(myPosition, target, ChessPiece.PieceType.KNIGHT));
+                } else {
+                    move.add(new ChessMove(myPosition, target, null));
+                }
+            }
+        }
 
         return move;
     }
