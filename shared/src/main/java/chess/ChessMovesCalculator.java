@@ -8,7 +8,7 @@ public class ChessMovesCalculator {
     public Collection<ChessMove> determineMoves(ChessBoard board, ChessPosition myPosition) {
         return switch (board.getPiece(myPosition).getPieceType()) {
             case BISHOP -> bishopMoves(board, myPosition);
-//            case KING -> kingMoves(board, myPosition);
+            case KING -> kingMoves(board, myPosition);
 //            case KNIGHT -> knightMoves(board, myPosition);
 //            case PAWN -> pawnMoves(board, myPosition);
 //            case QUEEN -> queenMoves(board, myPosition);
@@ -45,11 +45,22 @@ public class ChessMovesCalculator {
         return move;
     }
 
-//    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
-//        int[][] KingDirections = {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1}};
-//        Collection<ChessMove> move = new ArrayList<>();
-//    }
-//
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
+        int[][] KingDirections = {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1}}; //king possible moves from current space
+        Collection<ChessMove> move = new ArrayList<>();
+        for (int[] direction : KingDirections) {
+            int y = direction[0];
+            int x = direction[1];
+            ChessPosition place = new ChessPosition(myPosition.getRow() + y, myPosition.getColumn() + x);
+            if (outsideBounds(place)) continue; //Check next direction if current is blocked by edge
+            ChessPiece spot =  board.getPiece(place);
+            if ((spot == null) || (spot.getPieceColor() != board.getPiece(myPosition).getPieceColor())) {
+                move.add(new ChessMove(myPosition, place, null)); //if spot to move to is unoccupied or taken by enemy piece, move to that spot
+            }
+        }
+        return move;
+    }
+
 //    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
 //        Collection<ChessMove> move = new ArrayList<>();
 //    }
@@ -65,6 +76,5 @@ public class ChessMovesCalculator {
 //    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
 //        Collection<ChessMove> move = new ArrayList<>();
 //    }
-
 
 }
