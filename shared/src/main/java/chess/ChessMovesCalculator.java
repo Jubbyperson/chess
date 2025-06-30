@@ -9,7 +9,7 @@ public class ChessMovesCalculator {
         return switch (board.getPiece(myPosition).getPieceType()) {
             case BISHOP -> bishopMoves(board, myPosition);
             case KING -> kingMoves(board, myPosition);
-//            case KNIGHT -> knightMoves(board, myPosition);
+            case KNIGHT -> knightMoves(board, myPosition);
 //            case PAWN -> pawnMoves(board, myPosition);
 //            case QUEEN -> queenMoves(board, myPosition);
 //            case ROOK -> rookMoves(board, myPosition);
@@ -67,10 +67,16 @@ public class ChessMovesCalculator {
         for (int[] direction : KnightDirections) {
             int y = direction[0];
             int x = direction[1];
+            ChessPosition place = new ChessPosition(myPosition.getRow() + y, myPosition.getColumn() + x);
+            if (outsideBounds(place)) continue;
+            ChessPiece spot =  board.getPiece(place);
+            if ((spot == null) || (spot.getPieceColor() != board.getPiece(myPosition).getPieceColor())){
+                move.add(new ChessMove(myPosition, place, null));
+            }
         }
-
         return move;
     }
+    //will combine knightMoves and kingMoves later into one helper function
 //
 //    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
 //        Collection<ChessMove> move = new ArrayList<>();
