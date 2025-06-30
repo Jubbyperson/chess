@@ -97,6 +97,17 @@ public class ChessMovesCalculator {
             }
         }
 
+        ChessPosition oneSpaceAhead = new ChessPosition(myPosition.getRow() + directionCoord, myPosition.getColumn());
+        ChessPosition twoSpaceAhead = new ChessPosition(myPosition.getRow() + 2 * directionCoord, myPosition.getColumn());
+        boolean whiteAtStart = ((piece.getPieceColor() == ChessGame.TeamColor.WHITE) && (myPosition.getRow() == 2) && (board.getPiece(twoSpaceAhead) == null) &&  (board.getPiece(oneSpaceAhead) == null));
+        if (whiteAtStart) {
+            move.add(new ChessMove(myPosition, twoSpaceAhead, null));
+        }
+        boolean blackAtStart = ((piece.getPieceColor() == ChessGame.TeamColor.BLACK) && (myPosition.getRow() == 7) && (board.getPiece(twoSpaceAhead) == null) &&  (board.getPiece(oneSpaceAhead) == null));
+        if (blackAtStart) {
+            move.add(new ChessMove(myPosition, twoSpaceAhead, null));
+        }
+
         return move;
     }
 
