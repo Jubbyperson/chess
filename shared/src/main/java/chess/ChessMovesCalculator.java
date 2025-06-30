@@ -23,22 +23,22 @@ public class ChessMovesCalculator {
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> move = new ArrayList<>();
-        int[][] BishopDirections = {{1,1},{1,-1},{-1,1},{-1,-1}};
+        int[][] BishopDirections = {{1,1},{1,-1},{-1,1},{-1,-1}}; //possible directions bishop can move
         for (int[] direction : BishopDirections) {
             int y = direction[0];
             int x = direction[1];
             for (int range = 1; ; range++) {
                 ChessPosition place = new ChessPosition(myPosition.getRow() + y * range, myPosition.getColumn() + x * range);
-                if (outsideBounds(place)) break;
+                if (outsideBounds(place)) break; //make sure bishop doesn't go out of bounds
                 ChessPiece spot =  board.getPiece(place);
                 if (spot == null){
                     move.add(new ChessMove(myPosition, place, null));
-                    continue;
+                    continue; //replace null spot with the bishop
                 }
                 if (spot.getPieceColor() != board.getPiece(myPosition).getPieceColor()) {
                     move.add(new ChessMove(myPosition, place, null));
                 }
-                break;
+                break; //go until piece found, if enemy piece, replace that piece
             }
 
         }
