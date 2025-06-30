@@ -78,14 +78,19 @@ public class ChessMovesCalculator {
     //will combine knightMoves and kingMoves later into one helper function
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
+        //general movement and promotion logic:
         Collection<ChessMove> move = new ArrayList<>();
         ChessPiece piece = board.getPiece(myPosition);
         int directionCoord;
+        int promotionRow;
         if (piece.getPieceColor() == ChessGame.TeamColor.WHITE){
             directionCoord = 1;
+            promotionRow = 8;
         } else {
             directionCoord = -1;
+            promotionRow = 1;
         }
+        ChessPosition oneSpaceAhead = new ChessPosition(myPosition.getRow() + directionCoord, myPosition.getColumn());
         int[][] PawnDirections = {{directionCoord, 0}};
         for (int[] direction : PawnDirections) {
             int y = direction[0];
@@ -93,11 +98,18 @@ public class ChessMovesCalculator {
             ChessPosition place = new ChessPosition(myPosition.getRow() + y, myPosition.getColumn() + x);
             if (outsideBounds(place)) continue;
             if (board.getPiece(place) == null){
+                if (oneSpaceAhead.getRow() == promotionRow && board.getPiece(oneSpaceAhead) == null){
+                    move.add(new ChessMove(myPosition, oneSpaceAhead, ChessPiece.PieceType.QUEEN));
+                    move.add(new ChessMove(myPosition, oneSpaceAhead, ChessPiece.PieceType.ROOK));
+                    move.add(new ChessMove(myPosition, oneSpaceAhead, ChessPiece.PieceType.BISHOP));
+                    move.add(new ChessMove(myPosition, oneSpaceAhead, ChessPiece.PieceType.KNIGHT));
+                } else {
                 move.add(new ChessMove(myPosition, place, null));
+                }
             }
         }
 
-        ChessPosition oneSpaceAhead = new ChessPosition(myPosition.getRow() + directionCoord, myPosition.getColumn());
+        //starting position movement logic:
         ChessPosition twoSpaceAhead = new ChessPosition(myPosition.getRow() + 2 * directionCoord, myPosition.getColumn());
         boolean whiteAtStart = ((piece.getPieceColor() == ChessGame.TeamColor.WHITE) && (myPosition.getRow() == 2) && (board.getPiece(twoSpaceAhead) == null) &&  (board.getPiece(oneSpaceAhead) == null));
         if (whiteAtStart) {
@@ -107,6 +119,9 @@ public class ChessMovesCalculator {
         if (blackAtStart) {
             move.add(new ChessMove(myPosition, twoSpaceAhead, null));
         }
+
+
+        //capture logic
 
         return move;
     }
