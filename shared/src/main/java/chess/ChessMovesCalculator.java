@@ -11,7 +11,7 @@ public class ChessMovesCalculator {
             case KING -> kingMoves(board, myPosition);
             case KNIGHT -> knightMoves(board, myPosition);
 //            case PAWN -> pawnMoves(board, myPosition);
-//            case QUEEN -> queenMoves(board, myPosition);
+            case QUEEN -> queenMoves(board, myPosition);
 //            case ROOK -> rookMoves(board, myPosition);
             default -> null;
         };
@@ -105,6 +105,7 @@ public class ChessMovesCalculator {
         }
         return move;
     }
+    //will combine queen and bishop into helper function
 //
 //    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
 //        Collection<ChessMove> move = new ArrayList<>();
