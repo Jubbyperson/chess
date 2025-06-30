@@ -81,10 +81,30 @@ public class ChessMovesCalculator {
 //    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
 //        Collection<ChessMove> move = new ArrayList<>();
 //    }
-//
-//    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
-//        Collection<ChessMove> move = new ArrayList<>();
-//    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> move = new ArrayList<>();
+        int[][] QueenDirections = {{1,1},{1,-1},{-1,1},{-1,-1},{0,1},{0,-1},{1,0},{-1,0}}; //possible directions Queen can move
+        for (int[] direction : QueenDirections) {
+            int y = direction[0];
+            int x = direction[1];
+            for (int range = 1; ; range++) {
+                ChessPosition place = new ChessPosition(myPosition.getRow() + y * range, myPosition.getColumn() + x * range);
+                if (outsideBounds(place)) break; //make sure Queen doesn't go out of bounds
+                ChessPiece spot =  board.getPiece(place);
+                if (spot == null){
+                    move.add(new ChessMove(myPosition, place, null));
+                    continue; //replace null spot with the Queen
+                }
+                if (spot.getPieceColor() != board.getPiece(myPosition).getPieceColor()) {
+                    move.add(new ChessMove(myPosition, place, null));
+                }
+                break; //go until piece found, if enemy piece, replace that piece
+            }
+
+        }
+        return move;
+    }
 //
 //    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
 //        Collection<ChessMove> move = new ArrayList<>();
