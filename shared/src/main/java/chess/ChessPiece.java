@@ -19,14 +19,6 @@ public class ChessPiece {
         this.type = type;
     }
 
-    public ChessGame.TeamColor getPieceColor() {
-        return pieceColor;
-    }
-
-    public PieceType getType() {
-        return type;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ChessPiece that)) {

@@ -34,7 +34,7 @@ public class ChessMovesCalculator {
                     moves.add(new ChessMove(myPosition, place, null));
                     continue;
                 }
-                if (spot.getPieceColor() != myPiece.getPieceColor()) {
+                if (spot.getTeamColor() != myPiece.getTeamColor()) {
                     moves.add(new ChessMove(myPosition, place, null));
                 }
                 break;
@@ -51,7 +51,7 @@ public class ChessMovesCalculator {
             ChessPosition place = new ChessPosition(myPosition.getRow() + y, myPosition.getColumn() + x);
             if (outsideBounds(place)) continue; //Check next direction if current is blocked by edge
             ChessPiece spot =  board.getPiece(place);
-            if ((spot == null) || (spot.getPieceColor() != board.getPiece(myPosition).getPieceColor())) {
+            if ((spot == null) || (spot.getTeamColor() != board.getPiece(myPosition).getTeamColor())) {
                 move.add(new ChessMove(myPosition, place, null)); //if spot to move to is unoccupied or taken by enemy piece, move to that spot
             }
         }
@@ -67,7 +67,7 @@ public class ChessMovesCalculator {
         int[][] QueenDirections = {{1,1},{1,-1},{-1,1},{-1,-1}, {0,1},{0,-1},{1,0},{-1,0}};
         return slidingPieceMoves(board, myPosition, QueenDirections);
     }
-    
+
      private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
         int[][] RookDirections = {{0,1},{0,-1},{-1,0},{1,0}};
         return slidingPieceMoves(board, myPosition, RookDirections);
@@ -90,7 +90,7 @@ public class ChessMovesCalculator {
         ChessPiece piece = board.getPiece(myPosition);
         int directionCoord;
         int promotionRow;
-        if (piece.getPieceColor() == ChessGame.TeamColor.WHITE) {
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             directionCoord = 1;
             promotionRow = 8;
         } else {
@@ -118,11 +118,11 @@ public class ChessMovesCalculator {
 
         //starting position movement logic:
         ChessPosition twoSpaceAhead = new ChessPosition(myPosition.getRow() + 2 * directionCoord, myPosition.getColumn());
-        boolean whiteAtStart = ((piece.getPieceColor() == ChessGame.TeamColor.WHITE) && (myPosition.getRow() == 2) && (board.getPiece(twoSpaceAhead) == null) && (board.getPiece(oneSpaceAhead) == null));
+        boolean whiteAtStart = ((piece.getTeamColor() == ChessGame.TeamColor.WHITE) && (myPosition.getRow() == 2) && (board.getPiece(twoSpaceAhead) == null) && (board.getPiece(oneSpaceAhead) == null));
         if (whiteAtStart) {
             move.add(new ChessMove(myPosition, twoSpaceAhead, null));
         }
-        boolean blackAtStart = ((piece.getPieceColor() == ChessGame.TeamColor.BLACK) && (myPosition.getRow() == 7) && (board.getPiece(twoSpaceAhead) == null) && (board.getPiece(oneSpaceAhead) == null));
+        boolean blackAtStart = ((piece.getTeamColor() == ChessGame.TeamColor.BLACK) && (myPosition.getRow() == 7) && (board.getPiece(twoSpaceAhead) == null) && (board.getPiece(oneSpaceAhead) == null));
         if (blackAtStart) {
             move.add(new ChessMove(myPosition, twoSpaceAhead, null));
         }
@@ -133,7 +133,7 @@ public class ChessMovesCalculator {
             ChessPosition target = new ChessPosition(myPosition.getRow() + directionCoord, myPosition.getColumn() + captureColumn);
             if (outsideBounds(target)) continue;
             ChessPiece place = board.getPiece(target);
-            if (place != null && place.getPieceColor() != piece.getPieceColor()) {
+            if (place != null && place.getTeamColor() != piece.getTeamColor()) {
                 if (target.getRow() == promotionRow) {
                     move.add(new ChessMove(myPosition, target, ChessPiece.PieceType.QUEEN));
                     move.add(new ChessMove(myPosition, target, ChessPiece.PieceType.ROOK));
@@ -149,4 +149,3 @@ public class ChessMovesCalculator {
     }
 }
 
-    
