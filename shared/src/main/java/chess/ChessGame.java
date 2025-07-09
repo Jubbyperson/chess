@@ -79,7 +79,15 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece piece = board.getPiece(move.getStartPosition());
-        board.
+        board.makeMove(move);
+        if (turn == TeamColor.WHITE) {
+            turn = TeamColor.BLACK;
+        } else {
+            turn = TeamColor.WHITE;
+        }
+        if (isInCheckmate(turn) || isInStalemate(turn)){
+            gameOver = true;
+        }
     }
 
     /**
