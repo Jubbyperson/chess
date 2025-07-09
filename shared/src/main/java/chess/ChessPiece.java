@@ -75,7 +75,7 @@ public class ChessPiece {
         Collection<ChessMove> legalMoves = new ArrayList<>();
         Collection<ChessMove> possibleMoves = pieceMoves(board, myPosition);
         for (ChessMove possibleMove : possibleMoves) {
-            ChessBoard tempBoard = board.copy();
+            ChessBoard tempBoard = board.copyBoard();
             tempBoard.makeMove(possibleMove);
             if (!tempBoard.isInCheck(this.getTeamColor())){
                 legalMoves.add(possibleMove);
