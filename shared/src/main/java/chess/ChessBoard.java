@@ -89,6 +89,16 @@ public class ChessBoard {
         return board;
     }
 
+    public void makeMove(ChessMove move){
+        ChessPiece piece = getPiece(move.getStartPosition());
+        if (move.getPromotionPiece() != null) {
+            addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+        } else {
+            addPiece(move.getEndPosition(), piece);
+        }
+        addPiece(move.getStartPosition(), null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ChessBoard that)) {
