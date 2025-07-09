@@ -75,6 +75,20 @@ public class ChessBoard {
         }
     }
 
+    public ChessBoard copyBoard() {
+        ChessBoard board = new ChessBoard();
+        for (int i = 0; i <= 8; i++){
+            for (int j = 0; j <= 8; j++){
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = getPiece(position);
+                if (piece != null){
+                    board.addPiece(position, new ChessPiece(piece.getTeamColor(), piece.getPieceType()));
+                }
+            }
+        }
+        return board;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ChessBoard that)) {
