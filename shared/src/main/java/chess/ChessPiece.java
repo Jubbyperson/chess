@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -68,5 +69,18 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessMovesCalculator determiner = new ChessMovesCalculator();
         return determiner.determineMoves(board, myPosition);
+    }
+
+    public Collection<ChessMove> legalMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> legalMoves = new ArrayList<>();
+        Collection<ChessMove> possibleMoves = pieceMoves(board, myPosition);
+        for (ChessMove possibleMove : possibleMoves) {
+            ChessBoard tempBoard = board.copy();
+            tempBoard.makeMove(possibleMove);
+            if (!tempBoard.isInCheck(this.getTeamColor())){
+                legalMoves.add(possibleMove);
+            }
+        }
+        return legalMoves;
     }
 }

@@ -68,14 +68,8 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> legalMoves = new ArrayList<>();
-        ChessPiece piece = board.getPiece(startPosition);
-        Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
-        for (int i =0; i < possibleMoves.size(); i++) {
-            if ()
-        }
-    }
 
+    }
 
     /**
      * Makes a move in a chess game
