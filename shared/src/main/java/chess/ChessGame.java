@@ -160,8 +160,8 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        for (int i=1; i<8; i++) {
-            for (int j=1; j<8; j++) {
+        for (int i=1; i<=8; i++) {
+            for (int j=1; j<=8; j++) {
                 ChessPosition position = new ChessPosition(i,j);
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
@@ -186,8 +186,8 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-        for (int i=1; i<8; i++) {
-            for (int j=1; j<8; j++) {
+        for (int i=1; i<=8; i++) {
+            for (int j=1; j<=8; j++) {
                 ChessPosition position = new ChessPosition(i,j);
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
