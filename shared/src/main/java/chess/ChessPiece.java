@@ -70,8 +70,4 @@ public class ChessPiece {
         ChessMovesCalculator determiner = new ChessMovesCalculator();
         return determiner.determineMoves(board, myPosition);
     }
-
-    public Collection<ChessMove> legalMoves(ChessBoard board, ChessPosition myPosition) {
-        return pieceMoves(board, myPosition);
-    }
 }

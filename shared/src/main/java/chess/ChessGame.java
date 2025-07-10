@@ -126,7 +126,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -136,7 +136,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -147,7 +147,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -169,13 +169,16 @@ public class ChessGame {
         return board;
     }
 
-    /**
-     * Helper method to find the king's position for a given team
-     *
-     * @param teamColor the team whose king to find
-     * @return the position of the king, or null if not found
-     */
     private ChessPosition findKingPosition(TeamColor teamColor) {
-
+        for (int i=1; i<=8;i++){
+            for (int j=1; j<=8; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    return position;
+                }
+            }
+        }
+        return null;
     }
 }
