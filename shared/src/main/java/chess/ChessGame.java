@@ -133,14 +133,14 @@ public class ChessGame {
         } else {
             enemyColor =  TeamColor.WHITE;
         }
-        for (int i=1; i<8; i++) {
-            for (int j=1; j<8; j++) {
+        for (int i=1; i<=8; i++) {
+            for (int j=1; j<=8; j++) {
                 ChessPosition position = new ChessPosition(i,j);
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null && piece.getTeamColor() == enemyColor) {
                     Collection<ChessMove> moves = piece.pieceMoves(board, position);
                     for (ChessMove move : moves) {
-                        if (move.getStartPosition().equals(kingsPosition)) {
+                        if (move.getEndPosition().equals(kingsPosition)) {
                             return true;
                         }
                     }
@@ -165,7 +165,7 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(i,j);
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> legalMoves = piece.pieceMoves(board, position);
+                    Collection<ChessMove> legalMoves = validMoves(position);
                     if (legalMoves != null && !legalMoves.isEmpty()) {
                         return false;
                     }
@@ -191,7 +191,7 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(i,j);
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> legalMoves = piece.pieceMoves(board, position);
+                    Collection<ChessMove> legalMoves = validMoves(position);
                     if (legalMoves != null && !legalMoves.isEmpty()) {
                         return false;
                     }
