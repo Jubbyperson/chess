@@ -4,8 +4,11 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DataAccessMemory implements DataAccess {
     private final Map<String, UserData> users = new HashMap<>();
@@ -47,5 +50,34 @@ public class DataAccessMemory implements DataAccess {
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
         return games.get(gameID);
+    }
+
+    @Override
+    public List<GameData> listGames() throws DataAccessException {
+        return new ArrayList<>(games.values());
+    }
+
+    @Override
+    public void updateGame(GameData game) throws DataAccessException {
+        games.put(game.gameID(), game);
+    }
+
+    @Override
+    public void createAuth(AuthData auth) throws DataAccessException {
+        authTokens.put(auth.authToken(), auth);
+    }
+
+    @Override
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        return authTokens.get(authToken);
+    }
+
+    @Override
+    public void deleteAuth(String authToken) throws DataAccessException {
+        authTokens.remove(authToken);
+    }
+
+    public int getNextGameID() {
+        return nextGameID++;
     }
 }
