@@ -28,4 +28,26 @@ public class UserService {
         dataAccess.createAuth(auth);
         return new RegisterResult(request.username(), authToken);
     }
+
+    public LoginResult login(LoginRequest request) throws Exception {
+        UserData user = dataAccess.getUser(request.username());
+        if (user == null || !user.password().equals(request.password())) {
+            throw new Exception("unauthorized");
+        }
+
+        String authToken = UUID.randomUUID().toString();
+        AuthData auth =  new AuthData(authToken, request.username());
+        dataAccess.createAuth(auth);
+        return new LoginResult(request.username(), authToken);
+    }
+
+    public LogoutResult logout(LogoutRequest request) throws Exception {
+        AuthData auth = dataAccess.getAuth(request.authToken());
+        if (auth == null) {
+            throw new Exception("unauthorized");
+        }
+
+        dataAccess.deleteAuth(request.authToken());
+        return new LogoutResult();
+    }
 }
