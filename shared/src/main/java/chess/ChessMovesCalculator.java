@@ -59,28 +59,28 @@ public class ChessMovesCalculator {
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
-        int[][] BishopDirections = {{1,1},{1,-1},{-1,1},{-1,-1}}; //possible directions bishop can move
-        return slidingPieceMoves(board, myPosition, BishopDirections);
+        int[][] bishopDirections = {{1,1},{1,-1},{-1,1},{-1,-1}}; //possible directions bishop can move
+        return slidingPieceMoves(board, myPosition, bishopDirections);
     }
 
      private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
-        int[][] QueenDirections = {{1,1},{1,-1},{-1,1},{-1,-1}, {0,1},{0,-1},{1,0},{-1,0}};
-        return slidingPieceMoves(board, myPosition, QueenDirections);
+        int[][] queenDirections = {{1,1},{1,-1},{-1,1},{-1,-1}, {0,1},{0,-1},{1,0},{-1,0}};
+        return slidingPieceMoves(board, myPosition, queenDirections);
     }
 
      private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
-        int[][] RookDirections = {{0,1},{0,-1},{-1,0},{1,0}};
-        return slidingPieceMoves(board, myPosition, RookDirections);
+        int[][] rookDirections = {{0,1},{0,-1},{-1,0},{1,0}};
+        return slidingPieceMoves(board, myPosition, rookDirections);
     }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
-        int[][] KingDirections = {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1}}; //king possible moves from current space
-        return stepPieceMoves(board, myPosition, KingDirections);
+        int[][] kingDirections = {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1}}; //king possible moves from current space
+        return stepPieceMoves(board, myPosition, kingDirections);
     }
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
-        int[][] KnightDirections = {{1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
-        return stepPieceMoves(board, myPosition, KnightDirections);
+        int[][] knightDirections = {{1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
+        return stepPieceMoves(board, myPosition, knightDirections);
     }
 
 
@@ -98,8 +98,8 @@ public class ChessMovesCalculator {
             promotionRow = 1;
         }
         ChessPosition oneSpaceAhead = new ChessPosition(myPosition.getRow() + directionCoord, myPosition.getColumn());
-        int[][] PawnDirections = {{directionCoord, 0}};
-        for (int[] direction : PawnDirections) {
+        int[][] pawnDirections = {{directionCoord, 0}};
+        for (int[] direction : pawnDirections) {
             int y = direction[0];
             int x = direction[1];
             ChessPosition place = new ChessPosition(myPosition.getRow() + y, myPosition.getColumn() + x);

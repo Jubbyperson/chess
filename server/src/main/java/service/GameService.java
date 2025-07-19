@@ -24,7 +24,13 @@ public class GameService {
             throw new Exception("unauthorized");
         }
         List<GameData> games = dataAccess.listGames();
-        List<ListGamesResult.GameEntry> gameEntries = games.stream().map(game -> new ListGamesResult.GameEntry(game.gameID(), game.whiteUser(), game.blackUser(), game.gameName())).collect(Collectors.toList());
+        List<ListGamesResult.GameEntry> gameEntries = games.stream()
+                .map(game -> new ListGamesResult.GameEntry(
+                        game.gameID(),
+                        game.whiteUser(),
+                        game.blackUser(),
+                        game.gameName()))
+                .collect(Collectors.toList());
         return new ListGamesResult(gameEntries);
     }
 

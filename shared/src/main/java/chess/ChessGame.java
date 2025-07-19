@@ -156,23 +156,28 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)) {
-            return false;
-        }
-        for (int i=1; i<=8; i++) {
-            for (int j=1; j<=8; j++) {
-                ChessPosition position = new ChessPosition(i,j);
+
+    private boolean hasValidMoves(TeamColor teamColor) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
                     Collection<ChessMove> legalMoves = validMoves(position);
                     if (legalMoves != null && !legalMoves.isEmpty()) {
-                        return false;
+                        return true;
                     }
                 }
             }
         }
-        return true;
+        return false;
+    }
+
+    public boolean isInCheckmate(TeamColor teamColor) {
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        return !hasValidMoves(teamColor);
     }
 
     /**
@@ -186,19 +191,7 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-        for (int i=1; i<=8; i++) {
-            for (int j=1; j<=8; j++) {
-                ChessPosition position = new ChessPosition(i,j);
-                ChessPiece piece = board.getPiece(position);
-                if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> legalMoves = validMoves(position);
-                    if (legalMoves != null && !legalMoves.isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        return !hasValidMoves(teamColor);
     }
 
     /**
