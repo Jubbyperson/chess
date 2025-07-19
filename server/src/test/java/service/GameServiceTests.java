@@ -9,8 +9,6 @@ import org.junit.jupiter.api.*;
 import service.requests.*;
 import service.results.*;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTests {
