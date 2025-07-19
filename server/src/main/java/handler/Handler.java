@@ -26,6 +26,12 @@ public class Handler {
     public Object register(Request request, Response response){
         try {
             RegisterRequest registerRequest = gson.fromJson(request.body(), RegisterRequest.class);
+            if (registerRequest.username() == null || registerRequest.username().isEmpty() ||
+                    registerRequest.password() == null || registerRequest.password().isEmpty() ||
+                    registerRequest.email() == null || registerRequest.email().isEmpty()) {
+                response.status(400);
+                return gson.toJson(new ErrorResponse("Error: bad request"));
+            }
             RegisterResult result = userService.register(registerRequest);
             response.status(200);
             return gson.toJson(result);
@@ -42,6 +48,11 @@ public class Handler {
     public Object login(Request req, Response res) {
         try {
             LoginRequest request = gson.fromJson(req.body(), LoginRequest.class);
+            if (request.username() == null || request.username().isEmpty() ||
+                    request.password() == null || request.password().isEmpty()) {
+                res.status(400);
+                return gson.toJson(new ErrorResponse("Error: bad request"));
+            }
             LoginResult result = userService.login(request);
             res.status(200);
             return gson.toJson(result);
@@ -81,6 +92,10 @@ public class Handler {
         try {
             String authToken = req.headers("authorization");
             CreateGameRequest request = gson.fromJson(req.body(), CreateGameRequest.class);
+            if (request.gameName() == null || request.gameName().isEmpty()) {
+                res.status(400);
+                return gson.toJson(new ErrorResponse("Error: bad request"));
+            }
             request = new CreateGameRequest(authToken, request.gameName());
             CreateGameResult result = gameService.createGame(request);
             res.status(200);
@@ -99,6 +114,14 @@ public class Handler {
         try {
             String authToken = req.headers("authorization");
             JoinGameRequest request = gson.fromJson(req.body(), JoinGameRequest.class);
+            if (request.playerColor() == null || request.playerColor().isEmpty()) {
+                res.status(400);
+                return gson.toJson(new ErrorResponse("Error: bad request"));
+            }
+            if (!request.playerColor().equals("WHITE") && !request.playerColor().equals("BLACK")) {
+                res.status(400);
+                return gson.toJson(new ErrorResponse("Error: bad request"));
+            }
             request = new JoinGameRequest(authToken, request.playerColor(), request.gameID());
             JoinGameResult result = gameService.joinGame(request);
             res.status(200);
