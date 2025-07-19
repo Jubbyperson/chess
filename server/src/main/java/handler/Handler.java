@@ -35,7 +35,7 @@ public class Handler {
             } else {
                 response.status(400);
             }
-            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()))
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         }
     }
 
@@ -77,6 +77,55 @@ public class Handler {
         }
     }
 
+    public Object createGame(Request req, Response res) {
+        try {
+            String authToken = req.headers("authorization");
+            CreateGameRequest request = gson.fromJson(req.body(), CreateGameRequest.class);
+            request = new CreateGameRequest(authToken, request.gameName());
+            CreateGameResult result = gameService.createGame(request);
+            res.status(200);
+            return gson.toJson(result);
+        } catch (Exception e) {
+            if (e.getMessage().equals("unauthorized")) {
+                res.status(401);
+            } else {
+                res.status(400);
+            }
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
+        }
+    }
+
+    public Object joinGame(Request req, Response res) {
+        try {
+            String authToken = req.headers("authorization");
+            JoinGameRequest request = gson.fromJson(req.body(), JoinGameRequest.class);
+            request = new JoinGameRequest(authToken, request.playerColor(), request.gameID());
+            JoinGameResult result = gameService.joinGame(request);
+            res.status(200);
+            return "{}";
+        } catch (Exception e) {
+            if (e.getMessage().equals("unauthorized")) {
+                res.status(401);
+            } else if (e.getMessage().equals("already taken")) {
+                res.status(403);
+            } else {
+                res.status(400);
+            }
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
+        }
+    }
+
+    public Object clear(Request req, Response res) {
+        try {
+            ClearRequest request = new ClearRequest();
+            ClearResult result = clearService.clear(request);
+            res.status(200);
+            return "{}";
+        } catch (Exception e) {
+            res.status(500);
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
+        }
+    }
 
     private record ErrorResponse(String message){}
 }
