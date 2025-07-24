@@ -106,8 +106,50 @@ public class SqlDataAccessTests {
         assertNull(dao.getGame(6));
     }
 
+    // ------------------- Auth Tests -------------------
+    @Test
+    void createAuth_success() throws Exception {
+        AuthData auth = new AuthData("token1", "alice");
+        dao.createAuth(auth);
+        AuthData fromDb = dao.getAuth("token1");
+        assertNotNull(fromDb);
+        assertEquals("alice", fromDb.username());
+    }
 
+    @Test
+    void createAuth_duplicate_fails() throws Exception {
+        AuthData auth = new AuthData("token2", "bob");
+        dao.createAuth(auth);
+        assertThrows(DataAccessException.class, () -> dao.createAuth(auth));
+    }
 
+    @Test
+    void getAuth_success() throws Exception {
+        AuthData auth = new AuthData("token3", "carol");
+        dao.createAuth(auth);
+        AuthData fromDb = dao.getAuth("token3");
+        assertNotNull(fromDb);
+        assertEquals("carol", fromDb.username());
+    }
 
+    @Test
+    void getAuth_notFound_returnsNull() throws Exception {
+        AuthData fromDb = dao.getAuth("notatoken");
+        assertNull(fromDb);
+    }
 
+    @Test
+    void deleteAuth_success() throws Exception {
+        AuthData auth = new AuthData("token4", "dave");
+        dao.createAuth(auth);
+        dao.deleteAuth("token4");
+        assertNull(dao.getAuth("token4"));
+    }
+
+    @Test
+    void clearAuth_success() throws Exception {
+        dao.createAuth(new AuthData("token5", "eve"));
+        dao.clearAuth();
+        assertNull(dao.getAuth("token5"));
+    }
 }
