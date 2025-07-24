@@ -1,7 +1,6 @@
 package server;
 
-import dataaccess.DataAccess;
-import dataaccess.DataAccessMemory;
+import dataaccess.SqlDataAccess;
 import handler.Handler;
 import spark.*;
 
@@ -9,7 +8,11 @@ public class Server {
     private final Handler handler;
 
     public Server(){
-        this.handler = new Handler(new DataAccessMemory());
+        try {
+            this.handler = new Handler(new SqlDataAccess());
+        } catch (dataaccess.DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int run(int desiredPort) {
