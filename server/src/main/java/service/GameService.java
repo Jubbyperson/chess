@@ -2,7 +2,6 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.DataAccess;
-import dataaccess.DataAccessMemory;
 import model.AuthData;
 import model.GameData;
 import service.requests.*;
@@ -39,9 +38,22 @@ public class GameService {
         if (auth == null) {
             throw new Exception("unauthorized");
         }
-        int gameID = ((DataAccessMemory) dataAccess).getNextGameID();
-        GameData game = new GameData(gameID, null, null, request.gameName(), new ChessGame());
+        GameData game = new GameData(0, null, null, request.gameName(), new ChessGame());
         dataAccess.createGame(game);
+
+        List<GameData> games = dataAccess.listGames();
+        int maxId = -1;
+        GameData createdGame = null;
+        for (GameData g : games) {
+            if (g.gameID() > maxId) {
+                maxId = g.gameID();
+                createdGame = g;
+            }
+        }
+        if (createdGame == null) {
+            throw new Exception("Game creation failed");
+        }
+        int gameID = createdGame.gameID();
         return new CreateGameResult(gameID);
     }
 

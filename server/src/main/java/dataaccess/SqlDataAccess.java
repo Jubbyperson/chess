@@ -148,15 +148,20 @@ public class SqlDataAccess implements DataAccess{
 
     @Override
     public void createGame(GameData game) throws DataAccessException {
-        var statement = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
+        var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
         try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setInt(1, game.gameID());
-            preparedStatement.setString(2, game.whiteUser());
-            preparedStatement.setString(3, game.blackUser());
-            preparedStatement.setString(4, game.gameName());
-            preparedStatement.setString(5, gson.toJson(game.game()));
+             var preparedStatement = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) { // <-- FIXED
+            preparedStatement.setString(1, game.whiteUser());
+            preparedStatement.setString(2, game.blackUser());
+            preparedStatement.setString(3, game.gameName());
+            preparedStatement.setString(4, gson.toJson(game.game()));
             preparedStatement.executeUpdate();
+
+            try (var rs = preparedStatement.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int generatedId = rs.getInt(1);
+                }
+            }
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create game", ex);
         }

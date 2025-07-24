@@ -1,6 +1,7 @@
 package handler;
 
 import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -35,8 +36,11 @@ public class Handler {
             RegisterResult result = userService.register(registerRequest);
             response.status(200);
             return gson.toJson(result);
+        } catch (DataAccessException e) {
+            response.status(500);
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         } catch (Exception e){
-            if (e.getMessage().equals("already taken")){
+            if ("already taken".equals(e.getMessage())){
                 response.status(403);
             } else {
                 response.status(400);
@@ -56,6 +60,9 @@ public class Handler {
             LoginResult result = userService.login(request);
             res.status(200);
             return gson.toJson(result);
+        } catch (DataAccessException e) {
+            res.status(500);
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         } catch (Exception e) {
             res.status(401);
             return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
@@ -69,6 +76,9 @@ public class Handler {
             LogoutResult result = userService.logout(request);
             res.status(200);
             return "{}";
+        } catch (DataAccessException e) {
+            res.status(500);
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         } catch (Exception e) {
             res.status(401);
             return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
@@ -82,6 +92,9 @@ public class Handler {
             ListGamesResult result = gameService.listGames(request);
             res.status(200);
             return gson.toJson(result);
+        } catch (DataAccessException e) {
+            res.status(500);
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         } catch (Exception e) {
             res.status(401);
             return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
@@ -100,8 +113,11 @@ public class Handler {
             CreateGameResult result = gameService.createGame(request);
             res.status(200);
             return gson.toJson(result);
+        } catch (DataAccessException e) {
+            res.status(500);
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         } catch (Exception e) {
-            if (e.getMessage().equals("unauthorized")) {
+            if ("unauthorized".equals(e.getMessage())) {
                 res.status(401);
             } else {
                 res.status(400);
@@ -126,10 +142,13 @@ public class Handler {
             JoinGameResult result = gameService.joinGame(request);
             res.status(200);
             return "{}";
+        } catch (DataAccessException e) {
+            res.status(500);
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         } catch (Exception e) {
-            if (e.getMessage().equals("unauthorized")) {
+            if ("unauthorized".equals(e.getMessage())) {
                 res.status(401);
-            } else if (e.getMessage().equals("already taken")) {
+            } else if ("already taken".equals(e.getMessage())) {
                 res.status(403);
             } else {
                 res.status(400);
@@ -144,6 +163,9 @@ public class Handler {
             ClearResult result = clearService.clear(request);
             res.status(200);
             return "{}";
+        } catch (DataAccessException e) {
+            res.status(500);
+            return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         } catch (Exception e) {
             res.status(500);
             return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
