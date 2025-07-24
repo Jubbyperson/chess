@@ -4,6 +4,8 @@ import chess.ChessGame;
 import com.google.gson.*;
 import java.sql.*;
 import model.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SqlDataAccess implements DataAccess{
@@ -182,5 +184,104 @@ public class SqlDataAccess implements DataAccess{
             throw new DataAccessException("failed to get game", ex);
         }
         return null;
+    }
+
+    @Override
+    public List<GameData> listGames() throws DataAccessException {
+        var result = new ArrayList<GameData>();
+        var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement);
+             var rs = preparedStatement.executeQuery()) {
+            while (rs.next()) {
+                ChessGame chessGame = gson.fromJson(rs.getString("game"), ChessGame.class);
+                result.add(new GameData(
+                        rs.getInt("gameID"),
+                        rs.getString("whiteUsername"),
+                        rs.getString("blackUsername"),
+                        rs.getString("gameName"),
+                        chessGame
+                ));
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to list games", ex);
+        }
+        return result;
+    }
+
+    @Override
+    public void updateGame(GameData game) throws DataAccessException {
+        var statement = "UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, game.whiteUser());
+            preparedStatement.setString(2, game.blackUser());
+            preparedStatement.setString(3, game.gameName());
+            preparedStatement.setString(4, gson.toJson(game.game()));
+            preparedStatement.setInt(5, game.gameID());
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to update game", ex);
+        }
+    }
+
+    @Override
+    public void createAuth(AuthData auth) throws DataAccessException {
+        var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, auth.authToken());
+            preparedStatement.setString(2, auth.username());
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to create auth", ex);
+        }
+    }
+
+    @Override
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        var statement = "SELECT authToken, username FROM auth WHERE authToken = ?";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, authToken);
+            try (var rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    return new AuthData(
+                            rs.getString("authToken"),
+                            rs.getString("username")
+                    );
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to get auth", ex);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteAuth(String authToken) throws DataAccessException {
+        var statement = "DELETE FROM auth WHERE authToken = ?";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, authToken);
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to delete auth", ex);
+        }
+    }
+
+    public int getNextGameID() throws DataAccessException {
+        var statement = "SELECT MAX(gameID) FROM games";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement);
+             var rs = preparedStatement.executeQuery()) {
+            if (rs.next()) {
+                int maxID = rs.getInt(1);
+                return maxID + 1;
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to get next game ID", ex);
+        }
+        return 1;
     }
 }
