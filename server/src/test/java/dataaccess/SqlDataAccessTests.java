@@ -2,8 +2,10 @@ package dataaccess;
 
 import model.UserData;
 import model.GameData;
+import model.AuthData;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 public class SqlDataAccessTests {
     private SqlDataAccess dao;
@@ -16,6 +18,7 @@ public class SqlDataAccessTests {
         dao.clearAuth();
     }
 
+    // ------------------- User Tests -------------------
     @Test
     void createUser_success() throws Exception {
         UserData user = new UserData("alice", "password123", "alice@example.com");
@@ -56,6 +59,7 @@ public class SqlDataAccessTests {
         assertNull(dao.getUser("dave"));
     }
 
+    // ------------------- Game Tests -------------------
     @Test
     void createGame_success() throws Exception {
         GameData game = new GameData(1, null, null, "Test Game", null); // Fill in with actual ChessGame if needed
@@ -72,7 +76,35 @@ public class SqlDataAccessTests {
         assertThrows(DataAccessException.class, () -> dao.createGame(game));
     }
 
+    @Test
+    void getGame_success() throws Exception {
+        GameData game = new GameData(3, null, null, "Game3", null);
+        dao.createGame(game);
+        GameData fromDb = dao.getGame(3);
+        assertNotNull(fromDb);
+        assertEquals("Game3", fromDb.gameName());
+    }
 
+    @Test
+    void getGame_notFound_returnsNull() throws Exception {
+        GameData fromDb = dao.getGame(999);
+        assertNull(fromDb);
+    }
+
+    @Test
+    void listGames_success() throws Exception {
+        dao.createGame(new GameData(4, null, null, "Game4", null));
+        dao.createGame(new GameData(5, null, null, "Game5", null));
+        List<GameData> games = dao.listGames();
+        assertTrue(games.size() >= 2);
+    }
+
+    @Test
+    void clearGames_success() throws Exception {
+        dao.createGame(new GameData(6, null, null, "Game6", null));
+        dao.clearGames();
+        assertNull(dao.getGame(6));
+    }
 
 
 
