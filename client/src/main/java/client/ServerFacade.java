@@ -15,6 +15,37 @@ public class ServerFacade {
         this.serverUrl = "http://localhost:" + port;
         this.gson = new Gson();
     }
+    public AuthData register(String username, String password, String email) throws Exception {
+        var request = new RegisterRequest(username, password, email);
+        var response = makeRequest("POST", "/user", request, RegisterResult.class);
+        return new AuthData(response.authToken(), response.username());
+    }
+
+    public AuthData login(String username, String password) throws Exception {
+        var request = new LoginRequest(username, password);
+        var response = makeRequest("POST", "/session", request, LoginResult.class);
+        return new AuthData(response.authToken(), response.username());
+    }
+
+    public void logout(String authToken) throws Exception {
+        makeRequestWithAuth("DELETE", "/session", null, LogoutResult.class, authToken);
+    }
+
+    public List<GameEntry> listGames(String authToken) throws Exception {
+        var response = makeRequestWithAuth("GET", "/game", null, ListGamesResult.class, authToken);
+        return response.games();
+    }
+
+    public int createGame(String authToken, String gameName) throws Exception {
+        var request = new CreateGameRequest(gameName);
+        var response = makeRequestWithAuth("POST", "/game", request, CreateGameResult.class, authToken);
+        return response.gameID();
+    }
+
+    public void joinGame(String authToken, int gameID, String playerColor) throws Exception {
+        var request = new JoinGameRequest(playerColor, gameID);
+        makeRequestWithAuth("PUT", "/game", request, JoinGameResult.class, authToken);
+    }
 
     private <T> T makeRequestWithAuth(String method, String path, Object request, Class<T> responseClass, String authToken) throws Exception {
         URL url = new URI(serverUrl + path).toURL();
