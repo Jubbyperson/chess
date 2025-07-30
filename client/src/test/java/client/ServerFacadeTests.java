@@ -59,4 +59,19 @@ public class ServerFacadeTests {
         });
         assertTrue(ex.getMessage().toLowerCase().contains("unauthorized"));
     }
+
+    @Test
+    void logoutSuccess() throws Exception {
+        var auth = facade.register("user4", "pass", "user4@email.com");
+        assertDoesNotThrow(() -> facade.logout(auth.authToken()));
+    }
+
+    @Test
+    void logoutFails() {
+        Exception ex = assertThrows(Exception.class, () -> {
+            facade.logout("badtoken");
+        });
+        assertTrue(ex.getMessage().toLowerCase().contains("unauthorized"));
+    }
+
 }
