@@ -274,19 +274,4 @@ public class SqlDataAccess implements DataAccess{
             throw new DataAccessException("failed to delete auth", ex);
         }
     }
-
-    public int getNextGameID() throws DataAccessException {
-        var statement = "SELECT MAX(gameID) FROM games";
-        try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement(statement);
-             var rs = preparedStatement.executeQuery()) {
-            if (rs.next()) {
-                int maxID = rs.getInt(1);
-                return maxID + 1;
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException("failed to get next game ID", ex);
-        }
-        return 1;
-    }
 }
