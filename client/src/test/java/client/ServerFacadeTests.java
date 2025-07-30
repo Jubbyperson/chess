@@ -1,18 +1,20 @@
 package client;
 
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 import server.Server;
-
 
 public class ServerFacadeTests {
 
     private static Server server;
+    private static ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade(port);
     }
 
     @AfterAll
@@ -26,4 +28,19 @@ public class ServerFacadeTests {
         Assertions.assertTrue(true);
     }
 
+    @Test
+    void registerSuccess() throws Exception {
+        var auth = facade.register("user1", "pass", "user1@email.com");
+        assertNotNull(auth);
+        assertTrue(auth.authToken().length() > 5);
+    }
+
+    @Test
+    void registerDuplicateFails() throws Exception {
+        facade.register("user2", "pass", "user2@email.com");
+        Exception ex = assertThrows(Exception.class, () -> {
+            facade.register("user2", "pass", "user2@email.com");
+        });
+        assertTrue(ex.getMessage().toLowerCase().contains("already taken"));
+    }
 }
