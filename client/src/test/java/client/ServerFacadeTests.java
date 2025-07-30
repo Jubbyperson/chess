@@ -43,4 +43,20 @@ public class ServerFacadeTests {
         });
         assertTrue(ex.getMessage().toLowerCase().contains("already taken"));
     }
+
+    @Test
+    void loginSuccess() throws Exception {
+        facade.register("user3", "pass", "user3@email.com");
+        var auth = facade.login("user3", "pass");
+        assertNotNull(auth);
+        assertEquals("user3", auth.username());
+    }
+
+    @Test
+    void loginFails() {
+        Exception ex = assertThrows(Exception.class, () -> {
+            facade.login("nope", "wrong");
+        });
+        assertTrue(ex.getMessage().toLowerCase().contains("unauthorized"));
+    }
 }
