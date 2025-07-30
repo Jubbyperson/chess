@@ -60,6 +60,40 @@ public class Client {
         }
     }
 
+    private void showPreloginHelp() {
+        System.out.println("Available commands:");
+        System.out.println("  help     - Show this help message");
+        System.out.println("  quit     - Exit the program");
+        System.out.println("  login    - Login to your account");
+        System.out.println("  register - Create a new account");
+    }
+
+    private void showPostloginHelp() {
+        System.out.println("Available commands:");
+        System.out.println("  help         - Show this help message");
+        System.out.println("  logout       - Logout of your account");
+        System.out.println("  create game  - Create a new game");
+        System.out.println("  list games   - List all games");
+        System.out.println("  play game    - Join a game as a player");
+        System.out.println("  observe game - Join a game as an observer");
+    }
+
+    private void register() {
+        try {
+            System.out.print("Username: ");
+            String username = scanner.nextLine().trim();
+            System.out.print("Password: ");
+            String password = scanner.nextLine().trim();
+            System.out.print("Email: ");
+            String email = scanner.nextLine().trim();
+
+            var authData = facade.register(username, password, email);
+            authToken = authData.authToken();
+            System.out.println("Registration successful! You are now logged in.");
+        } catch (Exception e) {
+            System.out.println("Registration failed: " + e.getMessage());
+        }
+    }
 
 
 }
