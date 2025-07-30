@@ -95,5 +95,60 @@ public class Client {
         }
     }
 
+    private void login() {
+        try {
+            System.out.print("Username: ");
+            String username = scanner.nextLine().trim();
+            System.out.print("Password: ");
+            String password = scanner.nextLine().trim();
 
+            var authData = facade.login(username, password);
+            authToken = authData.authToken();
+            System.out.println("Login successful!");
+        } catch (Exception e) {
+            System.out.println("Login failed: " + e.getMessage());
+        }
+    }
+
+    private void logout() {
+        try {
+            facade.logout(authToken);
+            authToken = null;
+            gameList = null;
+            System.out.println("Logout successful!");
+        } catch (Exception e) {
+            System.out.println("Logout failed: " + e.getMessage());
+        }
+    }
+
+    private void createGame() {
+        try {
+            System.out.print("Game name: ");
+            String gameName = scanner.nextLine().trim();
+
+            int gameID = facade.createGame(authToken, gameName);
+            System.out.println("Game created successfully! Game ID: " + gameID);
+        } catch (Exception e) {
+            System.out.println("Failed to create game: " + e.getMessage());
+        }
+    }
+
+    private void listGames() {
+        try {
+            gameList = facade.listGames(authToken);
+            if (gameList.isEmpty()) {
+                System.out.println("No games available.");
+            } else {
+                System.out.println("Available games:");
+                for (int i = 0; i < gameList.size(); i++) {
+                    var game = gameList.get(i);
+                    String whitePlayer = game.whiteUsername() != null ? game.whiteUsername() : "none";
+                    String blackPlayer = game.blackUsername() != null ? game.blackUsername() : "none";
+                    System.out.println((i + 1) + ". " + game.gameName() + " (White: " + whitePlayer + ", Black: " + blackPlayer + ")");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to list games: " + e.getMessage());
+        }
+    }
 }
