@@ -127,7 +127,7 @@ public class Client {
             String gameName = scanner.nextLine().trim();
 
             int gameID = facade.createGame(authToken, gameName);
-            System.out.println("Game created successfully! Game ID: " + gameID);
+            System.out.println("Game created successfully!");
         } catch (Exception e) {
             System.out.println("Failed to create game: " + e.getMessage());
         }
