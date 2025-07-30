@@ -104,4 +104,20 @@ public class ServerFacadeTests {
         });
         assertTrue(ex.getMessage().toLowerCase().contains("unauthorized"));
     }
+
+    @Test
+    void joinGameSuccess() throws Exception {
+        var auth = facade.register("user7", "pass", "user7@email.com");
+        int gameId = facade.createGame(auth.authToken(), "game4");
+        assertDoesNotThrow(() -> facade.joinGame(auth.authToken(), gameId, "WHITE"));
+    }
+
+    @Test
+    void joinGameFails() throws Exception {
+        var auth = facade.register("user8", "pass", "user8@email.com");
+        Exception ex = assertThrows(Exception.class, () -> {
+            facade.joinGame(auth.authToken(), 999999, "WHITE");
+        });
+        assertTrue(ex.getMessage().toLowerCase().contains("bad request"));
+    }
 }
