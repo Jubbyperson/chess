@@ -151,4 +151,43 @@ public class Client {
             System.out.println("Failed to list games: " + e.getMessage());
         }
     }
+
+    private void playGame() {
+        if (gameList == null || gameList.isEmpty()) {
+            System.out.println("No games available. Use 'list games' first.");
+            return;
+        }
+
+        try {
+            System.out.print("Enter game number: ");
+            int gameNumber = Integer.parseInt(scanner.nextLine().trim()) - 1;
+
+            if (gameNumber < 0 || gameNumber >= gameList.size()) {
+                System.out.println("Invalid game number.");
+                return;
+            }
+
+            System.out.print("Enter color (WHITE/BLACK): ");
+            String color = scanner.nextLine().trim().toUpperCase();
+
+            if (!color.equals("WHITE") && !color.equals("BLACK")) {
+                System.out.println("Invalid color. Must be WHITE or BLACK.");
+                return;
+            }
+
+            var game = gameList.get(gameNumber);
+            facade.joinGame(authToken, game.gameID(), color);
+            System.out.println("Joined game as " + color + " player!");
+
+            var chessGame = new chess.ChessGame();
+            chessGame.getBoard().resetBoard();
+            ChessBoardDrawer.drawBoard(chessGame,
+                    color.equals("WHITE") ? chess.ChessGame.TeamColor.WHITE : chess.ChessGame.TeamColor.BLACK);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid game number. Please enter a number.");
+        } catch (Exception e) {
+            System.out.println("Failed to join game: " + e.getMessage());
+        }
+    }
 }
