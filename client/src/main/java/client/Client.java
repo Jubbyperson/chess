@@ -190,4 +190,34 @@ public class Client {
             System.out.println("Failed to join game: " + e.getMessage());
         }
     }
+
+    private void observeGame() {
+        if (gameList == null || gameList.isEmpty()) {
+            System.out.println("No games available. Use 'list games' first.");
+            return;
+        }
+
+        try {
+            System.out.print("Enter game number: ");
+            int gameNumber = Integer.parseInt(scanner.nextLine().trim()) - 1;
+
+            if (gameNumber < 0 || gameNumber >= gameList.size()) {
+                System.out.println("Invalid game number.");
+                return;
+            }
+
+            var game = gameList.get(gameNumber);
+            facade.joinGame(authToken, game.gameID(), null);
+            System.out.println("Joined game as observer!");
+
+            var chessGame = new chess.ChessGame();
+            chessGame.getBoard().resetBoard();
+            ChessBoardDrawer.drawBoard(chessGame, chess.ChessGame.TeamColor.WHITE);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid game number. Please enter a number.");
+        } catch (Exception e) {
+            System.out.println("Failed to observe game: " + e.getMessage());
+        }
+    }
 }
