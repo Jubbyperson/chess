@@ -207,7 +207,7 @@ public class Client {
             }
 
             var game = gameList.get(gameNumber);
-            facade.joinGame(authToken, game.gameID(), null);
+            facade.joinGame(authToken, game.gameID(), "OBSERVER");
             System.out.println("Joined game as observer!");
 
             var chessGame = new chess.ChessGame();

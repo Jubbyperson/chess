@@ -28,7 +28,8 @@ public class ChessBoardDrawer {
                 ChessPosition position = new ChessPosition(row, displayCol);
                 ChessPiece piece = board.getPiece(position);
 
-                boolean isLightSquare = ((row + col) % 2 == 0);
+                boolean isLightSquare = (perspective == ChessGame.TeamColor.WHITE) ? 
+                    ((row + col) % 2 == 0) : ((row + col) % 2 == 1);
                 String bgColor = isLightSquare ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_DARK_GREY;
 
                 if (piece != null) {

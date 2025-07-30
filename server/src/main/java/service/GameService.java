@@ -78,8 +78,11 @@ public class GameService {
         GameData updatedGame;
         if ("WHITE".equals(request.playerColor())) {
             updatedGame = new GameData(game.gameID(), auth.username(), game.blackUser(), game.gameName(), game.game());
-        } else {
+        } else if ("BLACK".equals(request.playerColor())) {
             updatedGame = new GameData(game.gameID(), game.whiteUser(), auth.username(), game.gameName(), game.game());
+        } else {
+            // Observer - don't assign to any player position
+            updatedGame = game;
         }
         dataAccess.updateGame(updatedGame);
         return new JoinGameResult();
