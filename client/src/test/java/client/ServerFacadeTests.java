@@ -74,4 +74,18 @@ public class ServerFacadeTests {
         assertTrue(ex.getMessage().toLowerCase().contains("unauthorized"));
     }
 
+    @Test
+    void createGameSuccess() throws Exception {
+        var auth = facade.register("user5", "pass", "user5@email.com");
+        int gameId = facade.createGame(auth.authToken(), "game1");
+        assertTrue(gameId > 0);
+    }
+
+    @Test
+    void createGameFails() {
+        Exception ex = assertThrows(Exception.class, () -> {
+            facade.createGame("badtoken", "game2");
+        });
+        assertTrue(ex.getMessage().toLowerCase().contains("unauthorized"));
+    }
 }
