@@ -134,7 +134,7 @@ public class Handler {
                 res.status(400);
                 return gson.toJson(new ErrorResponse("Error: bad request"));
             }
-            if (!request.playerColor().equals("WHITE") && !request.playerColor().equals("BLACK")) {
+            if (!request.playerColor().equals("WHITE") && !request.playerColor().equals("BLACK") && !request.playerColor().equals("OBSERVER")) {
                 res.status(400);
                 return gson.toJson(new ErrorResponse("Error: bad request"));
             }
