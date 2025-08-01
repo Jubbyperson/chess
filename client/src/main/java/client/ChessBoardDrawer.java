@@ -34,15 +34,23 @@ public class ChessBoardDrawer {
 
                 if (piece != null) {
                     String pieceSymbol = getPieceSymbol(piece);
-                    String textColor = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ?
-                            EscapeSequences.SET_TEXT_COLOR_RED : EscapeSequences.SET_TEXT_COLOR_BLUE;
+                    // Reverse colors when perspective is BLACK
+                    String textColor;
+                    if (perspective == ChessGame.TeamColor.WHITE) {
+                        textColor = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ?
+                                EscapeSequences.SET_TEXT_COLOR_RED : EscapeSequences.SET_TEXT_COLOR_BLUE;
+                    } else {
+                        // When viewing from BLACK perspective, reverse the colors
+                        textColor = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ?
+                                EscapeSequences.SET_TEXT_COLOR_BLUE : EscapeSequences.SET_TEXT_COLOR_RED;
+                    }
                     System.out.print(bgColor + textColor + pieceSymbol + EscapeSequences.RESET_BG_COLOR);
                 } else {
                     System.out.print(bgColor + EscapeSequences.EMPTY + EscapeSequences.RESET_BG_COLOR);
                 }
             }
 
-            System.out.println(" " + displayRow);
+            System.out.println(EscapeSequences.RESET_TEXT_COLOR + " " + displayRow);
         }
         System.out.print("   ");
         if (perspective == ChessGame.TeamColor.WHITE) {
