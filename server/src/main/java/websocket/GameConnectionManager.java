@@ -32,4 +32,16 @@ public class GameConnectionManager {
             }
         });
     }
+    public void broadcastToOthers(Session excludeSession, ServerMessage message) {
+        String jsonMessage = gson.toJson(message);
+        connections.keySet().stream()
+                .filter(session -> session != excludeSession && session.isOpen())
+                .forEach(session -> {
+                    try {
+                        session.getRemote().sendString(jsonMessage);
+                    } catch (IOException e) {
+                        // Handle error
+                    }
+                });
+    }
 }
