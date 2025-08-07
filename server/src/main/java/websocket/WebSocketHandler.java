@@ -3,7 +3,7 @@ package websocket;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import chess.ChessGame;
+import chess.*;
 import com.google.gson.*;
 import dataaccess.DataAccess;
 import model.UserData;
@@ -55,4 +55,25 @@ public class WebSocketHandler {
             sendError(session, "Invalid message format");
         }
     }
+    @OnWebSocketClose
+    public void onClose(Session session, int statusCode, String reason) {
+        // Remove from all game connections
+        for (GameConnectionManager manager : gameConnections.values()) {
+            manager.removeConnection(session);
+        }
+    }
+
+    private void handleCommand(Session session, UserGameCommand command, UserData user) {
+        try {
+            switch (command.getCommandType()) {
+                case CONNECT -> handleConnect(session, command, user);
+                case LEAVE -> handleLeave(session, command, user);
+                case RESIGN -> handleResign(session, command, user);
+            }
+        } catch (Exception e) {
+            sendError(session, "Error processing command: " + e.getMessage());
+        }
+    }
+
+
 }
