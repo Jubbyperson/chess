@@ -5,11 +5,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import chess.*;
 import com.google.gson.*;
-import dataaccess.DataAccess;
-import model.UserData;
+import dataaccess.*;
+import model.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import websocket.commands.UserGameCommand;
+import websocket.messages.*;
 
 public class WebSocketHandler {
     private final Map<Integer, GameConnectionManager> gameConnections = new ConcurrentHashMap<>();
@@ -21,6 +22,7 @@ public class WebSocketHandler {
     public WebSocketHandler(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
     }
+
     @OnWebSocketConnect
     public void onConnect(Session session) {
         // Connection established, but we wait for CONNECT command
@@ -55,6 +57,7 @@ public class WebSocketHandler {
             sendError(session, "Invalid message format");
         }
     }
+
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
         // Remove from all game connections
@@ -75,5 +78,82 @@ public class WebSocketHandler {
         }
     }
 
+    private void handleConnect(Session session, UserGameCommand command, UserData user) {
+        try {
+            GameData game = dataAccess.getGame(command.getGameID());
+            if (game == null) {
+                sendError(session, "Game not found");
+                return;
+            }
 
+            GameConnectionManager manager = gameConnections.computeIfAbsent(
+                    command.getGameID(), k -> new GameConnectionManager());
+
+            manager.addConnection(session, user.username());
+
+            // Send LOAD_GAME to connecting user
+            sendLoadGame(session, game.game());
+
+            // Send notification to other users
+            String notificationMsg = user.username() + " joined the game";
+            manager.broadcastToOthers(session, new NotificationMessage(notificationMsg));
+        } catch (Exception e) {
+            sendError(session, "Error connecting to game: " + e.getMessage());
+        }
+    }
+
+    private void handleMakeMove(Session session, UserGameCommand command, ChessMove move, UserData user) {
+        try {
+            GameData gameData = dataAccess.getGame(command.getGameID());
+            if (gameData == null) {
+                sendError(session, "Game not found");
+                return;
+            }
+
+            ChessGame game = gameData.game();
+
+            // Check if move is valid
+            try {
+                game.makeMove(move);
+            } catch (Exception e) {
+                sendError(session, "Invalid move: " + e.getMessage());
+                return;
+            }
+
+            // Update game in database
+            GameData updatedGame = new GameData(gameData.gameID(), gameData.whiteUser(),
+                    gameData.blackUser(), gameData.gameName(), game);
+            dataAccess.updateGame(updatedGame);
+
+            // Broadcast LOAD_GAME to all players
+            GameConnectionManager manager = gameConnections.get(command.getGameID());
+            if (manager != null) {
+                manager.broadcastToAll(new LoadGameMessage(game));
+
+                // Send notification to others about the move
+                String moveDescription = user.username() + " moved " +
+                        move.getStartPosition() + " to " + move.getEndPosition();
+                manager.broadcastToOthers(session, new NotificationMessage(moveDescription));
+
+                if (game.isInCheckmate(game.getTeamTurn())) {
+                    manager.broadcastToAll(new NotificationMessage(
+                            game.getTeamTurn() + " is in checkmate"));
+                } else if (game.isInCheck(game.getTeamTurn())) {
+                    manager.broadcastToAll(new NotificationMessage(
+                            game.getTeamTurn() + " is in check"));
+                }
+            }
+        } catch (Exception e) {
+            sendError(session, "Error making move: " + e.getMessage());
+        }
+    }
+    private void handleLeave(Session session, UserGameCommand command, UserData user) {
+        GameConnectionManager manager = gameConnections.get(command.getGameID());
+        if (manager != null) {
+            manager.removeConnection(session);
+
+            // Send notification to others
+            manager.broadcastToAll(new NotificationMessage(user.username() + " left the game"));
+        }
+    }
 }
