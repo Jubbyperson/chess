@@ -1,5 +1,6 @@
 package websocket;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -154,6 +155,52 @@ public class WebSocketHandler {
 
             // Send notification to others
             manager.broadcastToAll(new NotificationMessage(user.username() + " left the game"));
+        }
+    }
+
+    private void handleResign(Session session, UserGameCommand command, UserData user) {
+        try {
+            GameData gameData = dataAccess.getGame(command.getGameID());
+            if (gameData == null) {
+                sendError(session, "Game not found");
+                return;
+            }
+
+            ChessGame game = gameData.game();
+            if (game.isGameOver()) {
+                sendError(session, "Game is already over");
+                return;
+            }
+
+            // Mark game as over
+            game.setGameOver(true);
+
+            GameData updatedGame = new GameData(gameData.gameID(), gameData.whiteUser(),
+                    gameData.blackUser(), gameData.gameName(), game);
+            dataAccess.updateGame(updatedGame);
+
+            // Broadcast resignation notification to ALL players
+            GameConnectionManager manager = gameConnections.get(command.getGameID());
+            if (manager != null) {
+                manager.broadcastToAll(new NotificationMessage(user.username() + " resigned"));
+            }
+        } catch (Exception e) {
+            sendError(session, "Error resigning: " + e.getMessage());
+        }
+    }
+    private void sendLoadGame(Session session, ChessGame game) {
+        try {
+            session.getRemote().sendString(gson.toJson(new LoadGameMessage(game)));
+        } catch (IOException e) {
+            // Handle error
+        }
+    }
+
+    private void sendError(Session session, String errorMessage) {
+        try {
+            session.getRemote().sendString(gson.toJson(new ErrorMessage(errorMessage)));
+        } catch (IOException e) {
+            // Handle error
         }
     }
 }

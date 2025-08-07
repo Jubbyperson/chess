@@ -61,6 +61,21 @@ public class ChessGame {
     }
 
     /**
+     * @return true if the game is over (checkmate, stalemate, or resignation)
+     */
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    /**
+     * Sets the game as over
+     * @param gameOver true if the game should be marked as over
+     */
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    /**
      * Gets a valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
