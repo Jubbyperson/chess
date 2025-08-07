@@ -77,6 +77,15 @@ public class DataAccessMemory implements DataAccess {
         authTokens.remove(authToken);
     }
 
+    @Override
+    public UserData getUserByAuthToken(String authToken) throws DataAccessException {
+        AuthData authData = authTokens.get(authToken);
+        if (authData == null) {
+            return null;
+        }
+        return users.get(authData.username());
+    }
+
     public int getNextGameID() {
         return nextGameID++;
     }

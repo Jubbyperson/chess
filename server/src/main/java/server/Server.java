@@ -33,6 +33,7 @@ public class Server {
             res.status(500);
             res.body("{\"message\":\"Error: " + e.getMessage() + "\"}");
         });
+        Spark.webSocket("/ws", new WebSocketHandler(handler.getDataAccess()));
 
         Spark.awaitInitialization();
         return Spark.port();

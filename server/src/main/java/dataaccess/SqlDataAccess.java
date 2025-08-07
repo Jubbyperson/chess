@@ -274,4 +274,30 @@ public class SqlDataAccess implements DataAccess{
             throw new DataAccessException("failed to delete auth", ex);
         }
     }
+
+    @Override
+    public UserData getUserByAuthToken(String authToken) throws DataAccessException {
+        var statement = """
+        SELECT u.username, u.password, u.email 
+        FROM users u 
+        JOIN auth a ON u.username = a.username 
+        WHERE a.authToken = ?
+        """;
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, authToken);
+            try (var rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    return new UserData(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("email")
+                    );
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to get user by auth token", ex);
+        }
+        return null;
+    }
 }

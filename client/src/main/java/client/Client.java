@@ -8,6 +8,7 @@ public class Client {
     private final Scanner scanner;
     private String authToken;
     private List<ServerFacade.GameEntry> gameList;
+    private WebSocketClient webSocketClient;
 
     public Client(int port) {
         this.facade = new ServerFacade(port);
