@@ -2,15 +2,13 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.*;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
+import javax.websocket.*;
 import java.net.URI;
 
-@WebSocket
+@ClientEndpoint
 public class WebSocketClient {
     private Session session;
     private GameplayUI gameplayUI;
@@ -22,11 +20,8 @@ public class WebSocketClient {
 
     public void connect(String serverUrl) throws Exception {
         URI uri = new URI(serverUrl);
-        org.eclipse.jetty.websocket.client.WebSocketClient client = new org.eclipse.jetty.websocket.client.WebSocketClient();
-        client.start();
-
-        ClientUpgradeRequest request = new ClientUpgradeRequest();
-        this.session = client.connect(this, uri, request).get();
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        this.session = container.connectToServer(this, uri);
     }
 
     public void disconnect() throws Exception {
@@ -38,7 +33,7 @@ public class WebSocketClient {
     public void sendCommand(UserGameCommand command) throws Exception {
         if (session != null && session.isOpen()) {
             String message = gson.toJson(command);
-            session.getRemote().sendString(message);
+            session.getBasicRemote().sendText(message);
         }
     }
 
@@ -53,11 +48,11 @@ public class WebSocketClient {
                     move.getPromotionPiece() != null ?
                             ",\"promotionPiece\":\"" + move.getPromotionPiece() + "\"" : ""
             );
-            session.getRemote().sendString(moveJson);
+            session.getBasicRemote().sendText(moveJson);
         }
     }
 
-    @OnWebSocketMessage
+    @OnMessage
     public void onMessage(String message) {
         try {
             ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
@@ -81,18 +76,18 @@ public class WebSocketClient {
         }
     }
 
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
+    @OnOpen
+    public void onOpen(Session session) {
         System.out.println("Connected to game");
     }
 
-    @OnWebSocketClose
-    public void onClose(int statusCode, String reason) {
+    @OnClose
+    public void onClose(Session session, CloseReason closeReason) {
         System.out.println("Disconnected from game");
     }
 
-    @OnWebSocketError
-    public void onError(Throwable error) {
-        gameplayUI.displayError("WebSocket error: " + error.getMessage());
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        gameplayUI.displayError("WebSocket error: " + throwable.getMessage());
     }
 }
