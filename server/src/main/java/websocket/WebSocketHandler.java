@@ -186,12 +186,37 @@ public class WebSocketHandler {
     }
 
     private void handleLeave(Session session, UserGameCommand command, UserData user) {
-        GameConnectionManager manager = gameConnections.get(command.getGameID());
-        if (manager != null) {
-            manager.removeConnection(session);
+        try {
+            GameData gameData = dataAccess.getGame(command.getGameID());
+            if (gameData == null) {
+                sendError(session, "Game not found");
+                return;
+            }
 
-            // Send notification to others
-            manager.broadcastToAll(new NotificationMessage(user.username() + " left the game"));
+            GameConnectionManager manager = gameConnections.get(command.getGameID());
+            if (manager != null) {
+                manager.removeConnection(session);
+
+                // Remove player from game data if they're a player (not observer)
+                GameData updatedGame = gameData;
+                if (user.username().equals(gameData.whiteUser())) {
+                    updatedGame = new GameData(gameData.gameID(), null, gameData.blackUser(), 
+                            gameData.gameName(), gameData.game());
+                } else if (user.username().equals(gameData.blackUser())) {
+                    updatedGame = new GameData(gameData.gameID(), gameData.whiteUser(), null, 
+                            gameData.gameName(), gameData.game());
+                }
+
+                // Update game in database if player was removed
+                if (!updatedGame.equals(gameData)) {
+                    dataAccess.updateGame(updatedGame);
+                }
+
+                // Send notification to others
+                manager.broadcastToAll(new NotificationMessage(user.username() + " left the game"));
+            }
+        } catch (Exception e) {
+            sendError(session, "Error leaving game: " + e.getMessage());
         }
     }
 
