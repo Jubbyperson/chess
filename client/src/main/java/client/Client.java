@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import java.util.List;
 import java.util.Scanner;
 
@@ -180,10 +181,11 @@ public class Client {
             facade.joinGame(authToken, game.gameID(), color);
             System.out.println("Joined game as " + color + " player!");
 
-            var chessGame = new chess.ChessGame();
-            chessGame.getBoard().resetBoard();
-            ChessBoardDrawer.drawBoard(chessGame,
-                    color.equals("WHITE") ? chess.ChessGame.TeamColor.WHITE : chess.ChessGame.TeamColor.BLACK);
+            ChessGame.TeamColor playerColor = color.equals("WHITE") ?
+                    ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            GameplayUI gameplayUI = new GameplayUI(scanner, authToken, game.gameID(),
+                    playerColor, false);
+            gameplayUI.start("ws://localhost:8080/ws");
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid game number. Please enter a number.");
