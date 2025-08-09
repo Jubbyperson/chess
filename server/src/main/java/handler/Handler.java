@@ -13,12 +13,14 @@ import spark.Response;
 
 
 public class Handler {
+    private final DataAccess dataAccess;
     private final UserService userService;
     private final GameService gameService;
     private final ClearService clearService;
     private final Gson gson = new Gson();
 
     public Handler(DataAccess dataAccess){
+        this.dataAccess = dataAccess;
         this.userService = new UserService(dataAccess);
         this.gameService = new GameService(dataAccess);
         this.clearService = new ClearService(dataAccess);
@@ -170,6 +172,10 @@ public class Handler {
             res.status(500);
             return gson.toJson(new ErrorResponse("Error: " + e.getMessage()));
         }
+    }
+
+    public DataAccess getDataAccess() {
+        return dataAccess;
     }
 
     private record ErrorResponse(String message){}

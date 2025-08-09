@@ -3,6 +3,7 @@ package server;
 import dataaccess.SqlDataAccess;
 import handler.Handler;
 import spark.*;
+import websocket.WebSocketHandler;
 
 public class Server {
     private final Handler handler;

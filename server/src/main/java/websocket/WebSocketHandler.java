@@ -10,7 +10,7 @@ import dataaccess.*;
 import model.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.*;
 
 public class WebSocketHandler {
@@ -95,8 +95,17 @@ public class WebSocketHandler {
             // Send LOAD_GAME to connecting user
             sendLoadGame(session, game.game());
 
+            // Determine if user is a player or observer
+            String notificationMsg;
+            if (user.username().equals(game.whiteUser())) {
+                notificationMsg = user.username() + " connected to the game as the WHITE player";
+            } else if (user.username().equals(game.blackUser())) {
+                notificationMsg = user.username() + " connected to the game as the BLACK player";
+            } else {
+                notificationMsg = user.username() + " connected to the game as an observer";
+            }
+
             // Send notification to other users
-            String notificationMsg = user.username() + " joined the game";
             manager.broadcastToOthers(session, new NotificationMessage(notificationMsg));
         } catch (Exception e) {
             sendError(session, "Error connecting to game: " + e.getMessage());
