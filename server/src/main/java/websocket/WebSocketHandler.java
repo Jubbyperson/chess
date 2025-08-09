@@ -13,6 +13,7 @@ import org.eclipse.jetty.websocket.api.annotations.*;
 import websocket.commands.*;
 import websocket.messages.*;
 
+@WebSocket
 public class WebSocketHandler {
     private final Map<Integer, GameConnectionManager> gameConnections = new ConcurrentHashMap<>();
     private final Map<Integer, Map<String, ChessGame.TeamColor>> gamePlayers = new ConcurrentHashMap<>();
@@ -202,6 +203,15 @@ public class WebSocketHandler {
                 return;
             }
 
+            // CRITICAL: Check if user is actually a player (not observer)
+            boolean isPlayer = user.username().equals(gameData.whiteUser()) ||
+                    user.username().equals(gameData.blackUser());
+
+            if (!isPlayer) {
+                sendError(session, "Observers cannot resign");
+                return;
+            }
+
             ChessGame game = gameData.game();
             if (game.isGameOver()) {
                 sendError(session, "Game is already over");
@@ -215,7 +225,7 @@ public class WebSocketHandler {
                     gameData.blackUser(), gameData.gameName(), game);
             dataAccess.updateGame(updatedGame);
 
-            // Broadcast resignation notification to ALL players
+            // Broadcast resignation notification to ALL players (including resignee)
             GameConnectionManager manager = gameConnections.get(command.getGameID());
             if (manager != null) {
                 manager.broadcastToAll(new NotificationMessage(user.username() + " resigned"));

@@ -84,6 +84,7 @@ public class ChessBoardDrawer {
                     EscapeSequences.WHITE_PAWN : EscapeSequences.BLACK_PAWN;
         };
     }
+
     public static void drawBoardWithHighlights(ChessGame game, ChessGame.TeamColor perspective,
                                                ChessPosition highlightStart, Collection<ChessMove> validMoves) {
         ChessBoard board = game.getBoard();

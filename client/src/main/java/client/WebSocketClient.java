@@ -1,9 +1,7 @@
 package client;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import websocket.commands.UserGameCommand;
-import websocket.messages.*;
 
 import javax.websocket.*;
 import java.net.URI;

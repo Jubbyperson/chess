@@ -21,6 +21,9 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        // Register WebSocket BEFORE HTTP routes
+        Spark.webSocket("/ws", new WebSocketHandler(handler.getDataAccess()));
+
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", handler::clear);
         Spark.post("/user", handler::register);
@@ -34,7 +37,6 @@ public class Server {
             res.status(500);
             res.body("{\"message\":\"Error: " + e.getMessage() + "\"}");
         });
-        Spark.webSocket("/ws", new WebSocketHandler(handler.getDataAccess()));
 
         Spark.awaitInitialization();
         return Spark.port();
