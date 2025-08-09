@@ -120,7 +120,24 @@ public class WebSocketHandler {
                 return;
             }
 
+            // CRITICAL: Check if user is actually a player (not observer)
+            boolean isWhitePlayer = user.username().equals(gameData.whiteUser());
+            boolean isBlackPlayer = user.username().equals(gameData.blackUser());
+
+            if (!isWhitePlayer && !isBlackPlayer) {
+                sendError(session, "Observers cannot make moves");
+                return;
+            }
+
             ChessGame game = gameData.game();
+
+            // CRITICAL: Check if it's the player's turn
+            ChessGame.TeamColor currentTurn = game.getTeamTurn();
+            if ((currentTurn == ChessGame.TeamColor.WHITE && !isWhitePlayer) ||
+                    (currentTurn == ChessGame.TeamColor.BLACK && !isBlackPlayer)) {
+                sendError(session, "Not your turn");
+                return;
+            }
 
             // Check if move is valid
             try {
@@ -141,8 +158,8 @@ public class WebSocketHandler {
                 manager.broadcastToAll(new LoadGameMessage(game));
 
                 // Send notification to others about the move
-                String moveDescription = user.username() + " moved " +
-                        move.getStartPosition() + " to " + move.getEndPosition();
+                String moveDescription = user.username() + " moved from " +
+                        moveNotation(move.getStartPosition()) + " to " + moveNotation(move.getEndPosition());
                 manager.broadcastToOthers(session, new NotificationMessage(moveDescription));
 
                 if (game.isInCheckmate(game.getTeamTurn())) {
@@ -151,12 +168,22 @@ public class WebSocketHandler {
                 } else if (game.isInCheck(game.getTeamTurn())) {
                     manager.broadcastToAll(new NotificationMessage(
                             game.getTeamTurn() + " is in check"));
+                } else if (game.isInStalemate(game.getTeamTurn())) {
+                    manager.broadcastToAll(new NotificationMessage(
+                            game.getTeamTurn() + " is in stalemate"));
                 }
             }
         } catch (Exception e) {
             sendError(session, "Error making move: " + e.getMessage());
         }
     }
+
+    // Add this helper method
+    private String moveNotation(ChessPosition pos) {
+        char col = (char) ('a' + pos.getColumn() - 1);
+        return "" + col + pos.getRow();
+    }
+
     private void handleLeave(Session session, UserGameCommand command, UserData user) {
         GameConnectionManager manager = gameConnections.get(command.getGameID());
         if (manager != null) {
