@@ -26,14 +26,9 @@ public class GameplayUI {
     }
 
     public void start(String serverUrl) throws Exception {
-        // Connect to WebSocket
         webSocketClient.connect(serverUrl);
-
-        // Send CONNECT command
         webSocketClient.sendCommand(new UserGameCommand(
                 UserGameCommand.CommandType.CONNECT, authToken, gameID));
-
-        // Start gameplay loop
         gameplayLoop();
     }
 
@@ -100,7 +95,6 @@ public class GameplayUI {
             ChessPosition end = parsePosition(endPos);
             ChessMove move = new ChessMove(start, end, null);
 
-            // For pawn promotion, ask for piece type
             ChessPiece piece = currentGame.getBoard().getPiece(start);
             if (piece != null && piece.getPieceType() == ChessPiece.PieceType.PAWN) {
                 if ((piece.getTeamColor() == ChessGame.TeamColor.WHITE && end.getRow() == 8) ||
