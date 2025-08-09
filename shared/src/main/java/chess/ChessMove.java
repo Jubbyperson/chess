@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Objects;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents moving a chess piece on a chessboard
@@ -10,7 +11,9 @@ import java.util.Objects;
  */
 public class ChessMove {
 
+    @SerializedName("start")
     private final ChessPosition startPosition;
+    @SerializedName("end")
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
 

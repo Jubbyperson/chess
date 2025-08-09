@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Objects;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents a single square position on a chess board
@@ -10,7 +11,9 @@ import java.util.Objects;
  */
 public class ChessPosition {
 
+    @SerializedName("row")
     private final int row;
+    @SerializedName("col")
     private final int col;
 
     public ChessPosition(int row, int col) {

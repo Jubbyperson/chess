@@ -165,9 +165,7 @@ public class GameplayUI {
         int col = colChar - 'a' + 1;
         int row = rowChar - '0';
         
-        ChessPosition result = new ChessPosition(row, col);
-        System.out.println("Parsed " + pos + " to row=" + row + ", col=" + col); // Debug
-        return result;
+        return new ChessPosition(row, col);
     }
 
     public void updateGame(ChessGame game) {

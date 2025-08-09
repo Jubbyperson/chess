@@ -28,7 +28,7 @@ public class ChessBoardDrawer {
 
             for (int col = 1; col <= 8; col++) {
                 int displayCol = (perspective == ChessGame.TeamColor.WHITE) ? col : (9 - col);
-                ChessPosition position = new ChessPosition(row, displayCol);
+                ChessPosition position = new ChessPosition(displayRow, displayCol);
                 ChessPiece piece = board.getPiece(position);
 
                 // Keep the checkered pattern consistent regardless of perspective
@@ -118,7 +118,7 @@ public class ChessBoardDrawer {
 
             for (int col = 1; col <= 8; col++) {
                 int displayCol = (perspective == ChessGame.TeamColor.WHITE) ? col : (9 - col);
-                ChessPosition position = new ChessPosition(row, displayCol);
+                ChessPosition position = new ChessPosition(displayRow, displayCol);
                 ChessPiece piece = board.getPiece(position);
 
                 String bgColor;

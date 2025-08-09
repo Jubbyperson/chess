@@ -17,6 +17,9 @@ public class ChessMovesCalculator {
     }
 
     private boolean outsideBounds(ChessPosition position) {
+        if (position == null) {
+            return true;  // null positions are considered out of bounds
+        }
         return (position.getRow() > 8 || position.getRow() < 1 || position.getColumn() > 8 || position.getColumn() < 1);
     }
 
@@ -43,7 +46,7 @@ public class ChessMovesCalculator {
         return moves;
     }
 
-    private Collection<ChessMove> stepPieceMoves(ChessBoard board, ChessPosition myPosition, int[][] directions){
+    private Collection<ChessMove> stepPieceMoves(ChessBoard board, ChessPosition myPosition, int[][] directions) {
         Collection<ChessMove> move = new ArrayList<>();
         for (int[] direction : directions) {
             int y = direction[0];
