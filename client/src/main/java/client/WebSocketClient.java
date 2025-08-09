@@ -39,7 +39,8 @@ public class WebSocketClient {
         if (session != null && session.isOpen()) {
             // Create the JSON manually to match test expectations
             String moveJson = String.format(
-                    "{\"commandType\":\"MAKE_MOVE\",\"authToken\":\"%s\",\"gameID\":%d,\"move\":{\"start\":{\"row\":%d,\"col\":%d},\"end\":{\"row\":%d,\"col\":%d}%s}}",
+                    "{\"commandType\":\"MAKE_MOVE\",\"authToken\":\"%s\",\"gameID\":%d," +
+                    "\"move\":{\"start\":{\"row\":%d,\"col\":%d},\"end\":{\"row\":%d,\"col\":%d}%s}}",
                     authToken, gameID,
                     move.getStartPosition().getRow(), move.getStartPosition().getColumn(),
                     move.getEndPosition().getRow(), move.getEndPosition().getColumn(),
@@ -80,11 +81,13 @@ public class WebSocketClient {
     }
 
     @OnClose
+    @SuppressWarnings("unused")
     public void onClose(Session session, CloseReason closeReason) {
         System.out.println("Disconnected from game");
     }
 
     @OnError
+    @SuppressWarnings("unused")
     public void onError(Session session, Throwable throwable) {
         gameplayUI.displayError("WebSocket error: " + throwable.getMessage());
     }
