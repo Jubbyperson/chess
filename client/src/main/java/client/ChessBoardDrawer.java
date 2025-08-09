@@ -2,6 +2,9 @@ package client;
 
 import chess.*;
 import ui.EscapeSequences;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class ChessBoardDrawer {
@@ -80,5 +83,80 @@ public class ChessBoardDrawer {
             case PAWN -> (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ?
                     EscapeSequences.WHITE_PAWN : EscapeSequences.BLACK_PAWN;
         };
+    }
+    public static void drawBoardWithHighlights(ChessGame game, ChessGame.TeamColor perspective,
+                                               ChessPosition highlightStart, Collection<ChessMove> validMoves) {
+        ChessBoard board = game.getBoard();
+        Set<ChessPosition> highlightedSquares = new HashSet<>();
+
+        if (highlightStart != null) {
+            highlightedSquares.add(highlightStart);
+        }
+
+        if (validMoves != null) {
+            for (ChessMove move : validMoves) {
+                highlightedSquares.add(move.getEndPosition());
+            }
+        }
+
+        System.out.print("   ");
+        if (perspective == ChessGame.TeamColor.WHITE) {
+            for (char col = 'a'; col <= 'h'; col++) {
+                System.out.print(" " + col + " ");
+            }
+        } else {
+            for (char col = 'h'; col >= 'a'; col--) {
+                System.out.print(" " + col + " ");
+            }
+        }
+        System.out.println();
+
+        for (int row = 1; row <= 8; row++) {
+            int displayRow = (perspective == ChessGame.TeamColor.WHITE) ? (9 - row) : row;
+            System.out.print(" " + displayRow + " ");
+
+            for (int col = 1; col <= 8; col++) {
+                int displayCol = (perspective == ChessGame.TeamColor.WHITE) ? col : (9 - col);
+                ChessPosition position = new ChessPosition(row, displayCol);
+                ChessPiece piece = board.getPiece(position);
+
+                String bgColor;
+                if (highlightedSquares.contains(position)) {
+                    bgColor = EscapeSequences.SET_BG_COLOR_YELLOW;
+                } else {
+                    boolean isLightSquare = ((row + col) % 2 == 0);
+                    bgColor = isLightSquare ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+                }
+
+                if (piece != null) {
+                    String pieceSymbol = getPieceSymbol(piece);
+                    String textColor;
+                    if (perspective == ChessGame.TeamColor.WHITE) {
+                        textColor = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ?
+                                EscapeSequences.SET_TEXT_COLOR_RED : EscapeSequences.SET_TEXT_COLOR_BLUE;
+                    } else {
+                        textColor = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ?
+                                EscapeSequences.SET_TEXT_COLOR_BLUE : EscapeSequences.SET_TEXT_COLOR_RED;
+                    }
+                    System.out.print(bgColor + textColor + pieceSymbol + EscapeSequences.RESET_BG_COLOR);
+                } else {
+                    System.out.print(bgColor + EscapeSequences.EMPTY + EscapeSequences.RESET_BG_COLOR);
+                }
+            }
+
+            System.out.println(EscapeSequences.RESET_TEXT_COLOR + " " + displayRow);
+        }
+
+        System.out.print("   ");
+        if (perspective == ChessGame.TeamColor.WHITE) {
+            for (char col = 'a'; col <= 'h'; col++) {
+                System.out.print(" " + col + " ");
+            }
+        } else {
+            for (char col = 'h'; col >= 'a'; col--) {
+                System.out.print(" " + col + " ");
+            }
+        }
+        System.out.println();
     }
 }
