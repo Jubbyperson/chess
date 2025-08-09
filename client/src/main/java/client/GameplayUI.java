@@ -95,5 +95,82 @@ public class GameplayUI {
         System.out.print("Enter end position (e.g., e4): ");
         String endPos = scanner.nextLine().trim();
 
+        try {
+            ChessPosition start = parsePosition(startPos);
+            ChessPosition end = parsePosition(endPos);
+            ChessMove move = new ChessMove(start, end, null);
 
+            // For pawn promotion, ask for piece type
+            ChessPiece piece = currentGame.getBoard().getPiece(start);
+            if (piece != null && piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                if ((piece.getTeamColor() == ChessGame.TeamColor.WHITE && end.getRow() == 8) ||
+                        (piece.getTeamColor() == ChessGame.TeamColor.BLACK && end.getRow() == 1)) {
+                    System.out.print("Promote to (Q/R/B/N): ");
+                    String promotion = scanner.nextLine().trim().toUpperCase();
+                    ChessPiece.PieceType promotionPiece = switch (promotion) {
+                        case "Q" -> ChessPiece.PieceType.QUEEN;
+                        case "R" -> ChessPiece.PieceType.ROOK;
+                        case "B" -> ChessPiece.PieceType.BISHOP;
+                        case "N" -> ChessPiece.PieceType.KNIGHT;
+                        default -> ChessPiece.PieceType.QUEEN;
+                    };
+                    move = new ChessMove(start, end, promotionPiece);
+                }
+            }
+
+            webSocketClient.sendMoveCommand(authToken, gameID, move);
+        } catch (Exception e) {
+            System.out.println("Invalid move format. Use format like 'e2'.");
+        }
+    }
+
+    private void resign() throws Exception {
+        if (isObserver) {
+            System.out.println("Observers cannot resign.");
+            return;
+        }
+
+        System.out.print("Are you sure you want to resign? (y/n): ");
+        String confirm = scanner.nextLine().trim().toLowerCase();
+        if (confirm.equals("y") || confirm.equals("yes")) {
+            webSocketClient.sendCommand(new UserGameCommand(
+                    UserGameCommand.CommandType.RESIGN, authToken, gameID));
+        }
+    }
+
+    private void highlightMoves() {
+        System.out.print("Enter piece position (e.g., e2): ");
+        String posStr = scanner.nextLine().trim();
+        try {
+            ChessPosition position = parsePosition(posStr);
+            Collection<ChessMove> validMoves = currentGame.validMoves(position);
+            ChessBoardDrawer.drawBoardWithHighlights(currentGame,
+                    isObserver ? ChessGame.TeamColor.WHITE : playerColor,
+                    position, validMoves);
+        } catch (Exception e) {
+            System.out.println("Invalid position format. Use format like 'e2'.");
+        }
+    }
+
+    private ChessPosition parsePosition(String pos) {
+        if (pos.length() != 2) {
+            throw new IllegalArgumentException("Invalid position format");
+        }
+        int col = pos.charAt(0) - 'a' + 1;
+        int row = pos.charAt(1) - '0';
+        return new ChessPosition(row, col);
+    }
+
+    public void updateGame(ChessGame game) {
+        this.currentGame = game;
+        redrawBoard();
+    }
+
+    public void displayError(String error) {
+        System.out.println("Error: " + error);
+    }
+
+    public void displayNotification(String notification) {
+        System.out.println(">>> " + notification);
+    }
 }
