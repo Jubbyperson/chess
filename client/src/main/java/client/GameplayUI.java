@@ -114,7 +114,7 @@ public class GameplayUI {
 
             webSocketClient.sendMoveCommand(authToken, gameID, move);
         } catch (Exception e) {
-            System.out.println("Invalid move format. Use format like 'e2'.");
+            System.out.println("Invalid move format. Use format like 'e2'. Error: " + e.getMessage());
         }
     }
 
@@ -147,12 +147,27 @@ public class GameplayUI {
     }
 
     private ChessPosition parsePosition(String pos) {
-        if (pos.length() != 2) {
-            throw new IllegalArgumentException("Invalid position format");
+        if (pos == null || pos.length() != 2) {
+            throw new IllegalArgumentException("Invalid position format: " + pos + ". Expected format like 'e2'");
         }
-        int col = pos.charAt(0) - 'a' + 1;
-        int row = pos.charAt(1) - '0';
-        return new ChessPosition(row, col);
+        
+        char colChar = pos.charAt(0);
+        char rowChar = pos.charAt(1);
+        
+        if (colChar < 'a' || colChar > 'h') {
+            throw new IllegalArgumentException("Invalid column: " + colChar + ". Must be a-h");
+        }
+        
+        if (rowChar < '1' || rowChar > '8') {
+            throw new IllegalArgumentException("Invalid row: " + rowChar + ". Must be 1-8");
+        }
+        
+        int col = colChar - 'a' + 1;
+        int row = rowChar - '0';
+        
+        ChessPosition result = new ChessPosition(row, col);
+        System.out.println("Parsed " + pos + " to row=" + row + ", col=" + col); // Debug
+        return result;
     }
 
     public void updateGame(ChessGame game) {

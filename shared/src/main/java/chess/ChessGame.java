@@ -142,6 +142,9 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingsPosition = findKingPosition(teamColor);
+        if (kingsPosition == null) {
+            return false; // No king found, can't be in check
+        }
         TeamColor enemyColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
         for (int i = 1; i <= 8; i++) {

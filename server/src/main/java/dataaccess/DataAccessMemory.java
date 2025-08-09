@@ -44,7 +44,10 @@ public class DataAccessMemory implements DataAccess {
 
     @Override
     public void createGame(GameData game) throws DataAccessException {
-        games.put(game.gameID(), game);
+        int newGameID = getNextGameID();
+        GameData gameWithID = new GameData(newGameID, game.whiteUser(), game.blackUser(), 
+                                         game.gameName(), game.game());
+        games.put(newGameID, gameWithID);
     }
 
     @Override
