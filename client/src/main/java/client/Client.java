@@ -210,12 +210,11 @@ public class Client {
             }
 
             var game = gameList.get(gameNumber);
-            facade.joinGame(authToken, game.gameID(), "OBSERVER");
             System.out.println("Joined game as observer!");
 
-            var chessGame = new chess.ChessGame();
-            chessGame.getBoard().resetBoard();
-            ChessBoardDrawer.drawBoard(chessGame, chess.ChessGame.TeamColor.WHITE);
+            GameplayUI gameplayUI = new GameplayUI(scanner, authToken, game.gameID(),
+                    ChessGame.TeamColor.WHITE, true);
+            gameplayUI.start("ws://localhost:8080/ws");
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid game number. Please enter a number.");
